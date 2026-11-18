@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harness, Automações e Orquestração · VIII SIEPEX 2026</title>
+<meta name="author" content="Kelvin Rebelo de Oliveira; Luiz Guimarães Silva; Carlos Augusto dos Santos Barbosa">
+<style>
+:root{
+  --g900:#1B4332; --g800:#22543B; --g700:#2D6A4F; --g600:#37855F; --g500:#40916C;
+  --g300:#95D5B2; --g200:#B7E4C7; --g100:#D8F3DC; --g50:#F1F8F4;
+  --ink:#1F2933; --muted:#5B6B72; --line:#D7E7DD; --orange:#E46C0A;
+  --serif:"Times New Roman", Times, "Liberation Serif", Georgia, serif;
+  --sans:"Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{
+  background:#0e1512;
+  font-family:var(--serif);
+  color:var(--ink);
+  overflow:hidden;
+}
+#stage{
+  position:fixed; top:50%; left:50%;
+  width:1280px; height:720px;
+  transform-origin:center center;
+}
+.slide{
+  position:absolute; inset:0;
+  width:1280px; height:720px;
+  background:#ffffff;
+  padding:34px 60px 0 60px;
+  display:none; flex-direction:column;
+  overflow:hidden;
+}
+.slide.active{display:flex;}
+/* subtle corner accent */
+.slide::before{
+  content:""; position:absolute; top:0; left:0; width:14px; height:100%;
+  background:linear-gradient(180deg,var(--g700),var(--g500));
+}
+.slide::after{
+  content:""; position:absolute; top:0; right:0; width:330px; height:6px;
+  background:linear-gradient(90deg,var(--g200),var(--g500));
+}
+
+/* top logos */
+.top{display:flex; align-items:center; justify-content:space-between; height:64px;}
+.logo{display:block;}
+.logo-ifpa{height:58px; width:auto;}
+.logo-siepex{height:60px; width:60px; object-fit:contain;}
+
+/* header */
+.head{margin-top:6px;}
+.head.compact{margin-top:2px;}
+.eb{
+  font-family:var(--sans); font-weight:700; letter-spacing:.14em;
+  text-transform:uppercase; font-size:13.5px; color:#2b6047;
+}
+.title{
+  font-family:var(--serif); font-weight:700; color:var(--g900);
+  font-size:30px; line-height:1.12; margin-top:5px; letter-spacing:.2px;
+  max-width:1140px;
+}
+.head.compact .title{font-size:28px;}
+
+/* content area */
+.content{flex:1 1 auto; min-height:0; margin-top:12px; display:flex;}
+
+/* footer */
+.foot{
+  height:46px; display:flex; align-items:center; justify-content:center;
+  border-top:1px solid var(--line); margin-top:8px;
+  font-family:var(--sans); font-size:13px; color:var(--muted);
+  position:relative;
+}
+.foot-l{letter-spacing:.02em;}
+.foot-r{position:absolute; right:0; font-weight:800; color:var(--g700); font-size:16px;}
+.foot-r .tot{color:var(--g300); font-weight:700; font-size:13px;}
+
+/* bullets */
+.bullets .content{align-items:center;}
+.blist{list-style:none; width:100%; display:flex; flex-direction:column; gap:11px;}
+.blist li{background:var(--g50); border-radius:10px;}
+.li-row{display:flex; align-items:flex-start; gap:16px; padding:12px 20px 12px 14px;}
+.num{
+  flex:0 0 auto; font-family:var(--sans); font-weight:800; color:#fff;
+  background:linear-gradient(135deg,var(--g600),var(--g700));
+  width:38px; height:38px; border-radius:9px;
+  display:flex; align-items:center; justify-content:center; font-size:15px;
+  box-shadow:0 2px 6px rgba(45,106,79,.25);
+}
+.li-txt{font-size:20px; line-height:1.3; color:var(--ink); padding-top:1px; text-align:justify;}
+.bullets.big .li-txt{font-size:23px;}
+.bullets.big .li-row{padding:16px 22px 16px 14px;}
+.bullets.big .blist{gap:14px;}
+
+/* figure */
+.figslide .content{flex-direction:column; align-items:center; justify-content:center;}
+.fig{width:100%; display:flex; flex-direction:column; align-items:center;}
+.fig-cap, .fig-cap{
+  font-family:var(--sans); font-weight:700; color:var(--g800);
+  font-size:16px; text-align:center; margin-bottom:10px; line-height:1.3;
+}
+.fig-k{
+  display:inline-block; background:var(--g700); color:#fff; font-weight:800;
+  padding:2px 10px; border-radius:6px; margin-right:8px; font-size:14px; letter-spacing:.03em;
+}
+.fig-card{
+  background:#fff; border:1px solid var(--line); border-radius:12px;
+  box-shadow:0 8px 26px rgba(27,67,50,.10);
+  padding:14px; max-width:100%;
+}
+.fig-card img{display:block; max-width:100%; max-height:432px; width:auto; height:auto; border-radius:6px;}
+.fig-src{
+  font-family:var(--sans); color:var(--muted); font-size:16px;
+  font-style:italic; text-align:center; margin-top:9px;
+}
+
+/* table */
+.tableSlide .content{flex-direction:column; align-items:center; justify-content:center;}
+.tbl{width:100%; display:flex; flex-direction:column; align-items:center;}
+.tbl-wrap{width:100%; border:1px solid var(--line); border-radius:12px; overflow:hidden;
+  box-shadow:0 8px 26px rgba(27,67,50,.08);}
+table{width:100%; border-collapse:collapse; font-family:var(--sans); font-size:15.5px;}
+thead th{
+  background:linear-gradient(180deg,var(--g700),var(--g800)); color:#fff;
+  text-align:left; padding:12px 14px; font-weight:700; font-size:15px; letter-spacing:.02em;
+}
+tbody td{padding:10px 14px; border-top:1px solid var(--line); vertical-align:top; line-height:1.3;}
+tbody tr:nth-child(even){background:var(--g50);}
+tbody td:first-child{font-weight:700; color:var(--g800); width:24%;}
+
+/* references */
+.refSlide .content{align-items:flex-start;}
+.refs{width:100%; columns:2; column-gap:44px; font-family:var(--sans); font-size:17px; line-height:1.4; color:#2b3940; text-align:justify;}
+.refs ul{list-style:none;}
+.refs li{margin-bottom:11px; padding-left:16px; text-indent:-16px;}
+
+/* cover */
+.cover{padding:0; display:none; flex-direction:row; background:#fff;}
+.cover.active{display:flex;}
+.cover::before{display:none;}
+.cover::after{display:none;}
+.cover-photo{position:relative; width:46%; height:100%; overflow:hidden;}
+.cover-photo > img:first-child{width:100%; height:100%; object-fit:cover;}
+.cover-tint{position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(27,67,50,.55) 0%, rgba(27,67,50,.35) 45%, rgba(27,67,50,.78) 100%);}
+.cover-siepex{position:absolute; top:26px; right:26px; height:96px; width:auto;
+  background:#fff; padding:8px; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,.25);}
+.cover-vlabel{position:absolute; left:26px; bottom:26px; color:#fff; font-family:var(--sans);
+  font-weight:800; letter-spacing:.16em; font-size:15px; text-transform:uppercase; opacity:.95;}
+.cover-body{flex:1; padding:52px 54px 40px 50px; display:flex; flex-direction:column;}
+.cover-eyebrow{font-family:var(--sans); font-weight:800; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--g600); font-size:15px;}
+.cover-title{font-family:var(--serif); font-weight:700; color:var(--g900); font-size:38px; line-height:1.14; margin-top:14px;}
+.cover-rule{width:88px; height:5px; border-radius:3px; background:linear-gradient(90deg,var(--g600),var(--g300)); margin:22px 0 20px;}
+.cover-authors{list-style:none; display:flex; flex-direction:column; gap:11px;}
+.cover-authors li{display:flex; flex-direction:column;}
+.cover-authors .nm{font-size:21px; color:var(--ink); font-weight:700;}
+.cover-authors .em{font-family:var(--sans); font-size:15px; color:var(--muted);}
+.cover-orient{font-family:var(--sans); font-size:15px; color:var(--muted); margin-top:14px; font-style:italic;}
+.cover-meta{margin-top:auto; display:flex; flex-direction:column; gap:9px; padding-top:20px;}
+.cover-meta .cm{display:flex; gap:12px; align-items:baseline; font-family:var(--sans);}
+.cm-k{flex:0 0 64px; font-weight:800; color:var(--g700); text-transform:uppercase; letter-spacing:.08em; font-size:13px;}
+.cm-v{font-size:16px; color:var(--ink);}
+.cover-note{font-family:var(--sans); font-size:13px; color:var(--muted); margin-top:16px; letter-spacing:.03em; border-top:1px solid var(--line); padding-top:14px;}
+
+/* nav */
+#nav{position:fixed; z-index:50; right:18px; bottom:14px; display:flex; align-items:center; gap:10px;
+  font-family:var(--sans); opacity:.28; transition:opacity .2s;}
+#nav:hover{opacity:1;}
+.navbtn{width:38px; height:38px; border-radius:50%; border:none; cursor:pointer;
+  background:var(--g700); color:#fff; font-size:18px; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 3px 10px rgba(0,0,0,.3);}
+.navbtn:hover{background:var(--g600);}
+#counter{color:#cfe3d8; font-size:14px; font-weight:700; letter-spacing:.05em;}
+#progress{position:fixed; z-index:60; left:0; top:0; height:4px; background:linear-gradient(90deg,var(--g500),var(--g300)); width:0; transition:width .25s;}
+#hint{position:fixed; z-index:50; left:50%; bottom:16px; transform:translateX(-50%);
+  font-family:var(--sans); font-size:13px; color:#9fb8ac; opacity:.5;}
+@media (max-width:640px){#hint{display:none;}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="stage">
+
+  <section class="slide cover" data-n="1">
+    <div class="cover-photo">
+      <img src="assets/cover.jpg" alt="">
+      <div class="cover-tint"></div>
+      <img class="cover-siepex" src="assets/logo_siepex_full.png" alt="VIII SIEPEX">
+      <div class="cover-vlabel">VIII SIEPEX · 2026</div>
+    </div>
+    <div class="cover-body">
+      <div class="cover-eyebrow">Oficina · VIII SIEPEX 2026</div>
+      <h1 class="cover-title">Harness, Automações e Orquestração: Desenvolvimento e Utilização de Agentes de IA na Criação de Tecnologias Emergentes</h1>
+      <div class="cover-rule"></div>
+      <ul class="cover-authors"><li><span class="nm">Kelvin Rebelo de Oliveira</span><span class="em">kelvinrebelosw@gmail.com</span></li><li><span class="nm">Luiz Guimarães Silva</span><span class="em">luiznetto.0102@gmail.com</span></li><li><span class="nm">Carlos Augusto dos Santos Barbosa</span><span class="em">carlosaugustoprog@gmail.com</span></li></ul>
+      <div class="cover-orient">Orientador: Prof. Adalberto Melo</div>
+      <div class="cover-meta">
+        <div class="cm"><span class="cm-k">Data</span><span class="cm-v">26 de novembro de 2026 · 19h30 às 21h30</span></div>
+        <div class="cm"><span class="cm-k">Local</span><span class="cm-v">IFPA, Campus Ananindeua · Sala 04</span></div>
+      </div>
+      <div class="cover-note">Semana Integrada de Ensino, Pesquisa e Extensão &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="2">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 1 · Abertura</div>
+      <h2 class="title">ORGANIZAÇÃO DA OFICINA E EQUIPE DE MINISTRANTES</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Bloco 1 e Bloco 3: abertura, objetivos da oficina e panorama dos laboratórios globais de IA.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Bloco 2: fundamentos de modelos, diferença entre LLMs, SLMs, embeddings, decisão e licenças open weight.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Bloco 4 e Bloco 5: arquitetura de agentes, harness, protocolos abertos, orquestração, loop engineering e autoaperfeiçoamento.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Bloco 6: trilha de estudos recomendada, mapa conceitual integrado, referências e discussão aberta.</div></div></li><li><div class="li-row"><div class="num">05</div><div class="li-txt">Abordagem didática: oficina conceitual e arquitetural com diagramas e comparações práticas, pensada para nivelar iniciantes e aprofundar desenvolvedores.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">02<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="3">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 1 · Abertura</div>
+      <h2 class="title">INTRODUÇÃO: UM MAPA INICIAL PARA O ECOSSISTEMA DE AGENTES</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Desafio atual: quem inicia em IA encontra termos dispersos como harness, subagents, skills, MCP, A2A e orquestradores sem uma visão conectada.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Inclusão tecnológica: traduzir conceitos avançados em linguagem acessível democratiza o desenvolvimento de soluções locais e acadêmicas.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">O que você levará hoje: critérios objetivos para escolher modelos, entender como agentes operam em loop e estruturar fluxos de trabalho seguros.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Foco no essencial: separar fundamentos arquiteturais duradouros de ferramentas passageiras para orientar seus próximos passos de estudo.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">03<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide figslide" data-n="4">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 2 · Fundamentos de Modelos</div>
+      <h2 class="title">HIERARQUIA ENTRE IA, APRENDIZADO DE MÁQUINA E AGENTES</h2>
+    </div>
+    <div class="content">
+      <figure class="fig">
+        <figcaption class="fig-cap"><span class="fig-k">Figura 1</span> Camadas conceituais da Inteligência Artificial até os Agentes Autônomos</figcaption>
+        <div class="fig-card"><img src="assets/fig1.png" alt="Camadas conceituais da Inteligência Artificial até os Agentes Autônomos"></div>
+        <div class="fig-src">Fonte: Elaborado pelos autores com base em Russell e Norvig (2021) e Wang et al. (2024).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">04<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="5">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 2 · Fundamentos de Modelos</div>
+      <h2 class="title">COMO FUNCIONA UM LLM: TOKENS, CONTEXTO E INFERÊNCIA</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Tokens: unidades básicas de texto (palavras, sílabas ou símbolos) processadas numericamente pelo modelo.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Parâmetros: pesos numéricos ajustados durante o treinamento que armazenam padrões estatísticos e conhecimento.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Janela de contexto: limite máximo de tokens que o modelo consegue manter ativos simultaneamente na memória de trabalho.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Treinamento versus inferência: o treinamento ajusta os pesos com grande volume de dados; a inferência gera respostas token a token em tempo real.</div></div></li><li><div class="li-row"><div class="num">05</div><div class="li-txt">Natura probabilística: o modelo calcula a distribuição de probabilidade do próximo token mais coerente dado todo o contexto anterior.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">05<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide tableSlide" data-n="6">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 2 · Fundamentos de Modelos</div>
+      <h2 class="title">TAXONOMIA DOS PRINCIPAIS MODELOS DE IA APLICADA</h2>
+    </div>
+    <div class="content">
+      <figure class="tbl">
+        <figcaption class="fig-cap"><span class="fig-k">Tabela 1</span> Classificação dos tipos de modelos de IA por entrada, saída e aplicação típica</figcaption>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Categoria</th><th>Entrada Típica</th><th>Saída Típica</th><th>Uso Principal em Sistemas</th></tr></thead><tbody><tr><td>LLM (Grande Porte)</td><td>Texto e código extenso</td><td>Texto estruturado e código</td><td>Planejamento complexo, síntese e geração geral</td></tr><tr><td>SLM (Pequeno Porte)</td><td>Texto curto ou estruturado</td><td>Texto rápido ou JSON</td><td>Execução local, baixa latência e tarefas pontuais</td></tr><tr><td>Modelo de Raciocínio</td><td>Problemas lógicos e código</td><td>Cadeia de pensamento e resposta</td><td>Matemática, depuração profunda e verificação</td></tr><tr><td>Modelo Multimodal</td><td>Texto, imagem, áudio e vídeo</td><td>Texto, ações ou áudio</td><td>Análise de interfaces, documentos visuais e voz</td></tr><tr><td>Modelo de Embeddings</td><td>Texto, código ou imagem</td><td>Vetor numérico denso</td><td>Busca semântica, agrupamento e memória</td></tr><tr><td>Decisão e Classificação</td><td>Dados tabulares ou texto</td><td>Rótulo, classe ou score</td><td>Triagem rápida, moderação e detecção de risco</td></tr><tr><td>Modelo de Difusão</td><td>Texto ou imagem base</td><td>Imagem, vídeo ou áudio</td><td>Geração visual, prototipagem e mídia sintética</td></tr></tbody></table>
+        </div>
+        <div class="fig-src">Fonte: Elaborado pelos autores com base em Bommasani et al. (2022) e documentações técnicas (2026).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">06<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide tableSlide" data-n="7">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 2 · Fundamentos de Modelos</div>
+      <h2 class="title">LLM VERSUS SLM: ESCALA, CUSTO E EXECUÇÃO LOCAL</h2>
+    </div>
+    <div class="content">
+      <figure class="tbl">
+        <figcaption class="fig-cap"><span class="fig-k">Tabela 2</span> Comparação técnica entre Grandes Modelos (LLMs) e Pequenos Modelos (SLMs)</figcaption>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Critério Técnico</th><th>LLM (Grande Porte)</th><th>SLM (Pequeno Porte)</th></tr></thead><tbody><tr><td>Escala de parâmetros</td><td>Dezenas a centenas de bilhões</td><td>De 1 bilhão a cerca de 14 bilhões</td></tr><tr><td>Infraestrutura exigida</td><td>Clusters de GPUs em nuvem</td><td>Notebooks, estações locais ou borda</td></tr><tr><td>Latência por resposta</td><td>Moderada a alta (segundos)</td><td>Muito baixa (milissegundos)</td></tr><tr><td>Custo por milhão de tokens</td><td>Mais elevado, proporcional ao porte</td><td>Reduzido ou zero em hardware próprio</td></tr><tr><td>Amplitude de conhecimento</td><td>Enciclopédica e generalista</td><td>Focada em domínio ou instruções</td></tr><tr><td>Papel ideal em agentes</td><td>Orquestrador e planejador central</td><td>Subagents rápidos, triagem e extração</td></tr></tbody></table>
+        </div>
+        <div class="fig-src">Fonte: Elaborado pelos autores com base em Belcak et al. (2025) e métricas de inferência (2026).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">07<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="8">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 2 · Fundamentos de Modelos</div>
+      <h2 class="title">MODELOS DE EMBEDDINGS E REPRESENTAÇÃO SEMÂNTICA</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Definição: modelos que convertem textos, trechos de código ou imagens em vetores numéricos em um espaço multidimensional.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Proximidade de significado: conceitos semanticamente semelhantes ocupam regiões próximas no espaço vetorial, mesmo sem palavras idênticas.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Busca semântica: permite localizar trechos relevantes em grandes bases de código ou documentos por intenção, superando buscas exatas.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Memória de agentes: sustenta a indexação de histórico, trajetórias passadas e recuperação de contexto sob demanda (como em sistemas RAG).</div></div></li><li><div class="li-row"><div class="num">05</div><div class="li-txt">Eficiência operacional: vetores são calculados uma única vez e consultados em milissegundos por bancos vetoriais.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">08<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="9">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 2 · Fundamentos de Modelos</div>
+      <h2 class="title">MODELOS DE DECISÃO E CLASSIFICAÇÃO VERSUS GENERATIVOS</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Modelos discriminativos e de decisão: mapeiam entradas diretamente para classes, probabilidades ou ações discretas (exemplos: árvores de decisão, classificadores e redes dedicadas).</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Modelos generativos: produzem sequências novas e abertas de tokens, imagens ou código a partir de distribuições aprendidas.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Previsibilidade e auditoria: classificadores oferecem fronteiras de decisão mensuráveis, baixa latência e comportamento determinístico.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Flexibilidade: modelos generativos lidam com instruções ambíguas e síntese criativa, mas exigem validação contra alucinações.</div></div></li><li><div class="li-row"><div class="num">05</div><div class="li-txt">Arquitetura híbrida: sistemas robustos usam classificadores como filtros de entrada e roteadores antes de acionar modelos generativos.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">09<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="10">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 2 · Fundamentos de Modelos</div>
+      <h2 class="title">MODELOS FECHADOS VERSUS OPEN WEIGHT: DISTINÇÕES TÉCNICAS</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Modelos fechados (proprietários): acessados exclusivamente via API comercial; arquitetura, pesos e dados de treino permanecem sigilosos.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Modelos open weight (pesos abertos): os parâmetros treinados são publicados para download, permitindo execução local, quantização e ajuste fino (fine tuning).</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Open weight não é open source pleno: liberar os pesos permite rodar e adaptar o modelo, mas raramente inclui o código completo de treino e os conjuntos de dados originais.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Licenciamento: variam de licenças permissivas (Apache 2.0, MIT) a licenças comunitárias com restrições comerciais ou de escala (como Llama e Gemma).</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">10<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide tableSlide" data-n="11">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 2 · Fundamentos de Modelos</div>
+      <h2 class="title">TRADE OFFS ENTRE MODELOS FECHADOS E OPEN WEIGHT</h2>
+    </div>
+    <div class="content">
+      <figure class="tbl">
+        <figcaption class="fig-cap"><span class="fig-k">Tabela 3</span> Análise comparativa das dimensões operacionais entre modelos fechados e open weight</figcaption>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Dimensão</th><th>Modelos Fechados (API)</th><th>Modelos Open Weight (Auto-hospedados)</th></tr></thead><tbody><tr><td>Qualidade de fronteira</td><td>Liderança frequente em raciocínio complexo</td><td>Muito próxima da fronteira nos líderes recentes</td></tr><tr><td>Modelo de custo</td><td>Pagamento por token consumido (OPEX)</td><td>Investimento em GPU ou servidor dedicado (CAPEX)</td></tr><tr><td>Privacidade de dados</td><td>Depende de contratos e políticas do provedor</td><td>Controle total em rede local ou nuvem privada</td></tr><tr><td>Latência e disponibilidade</td><td>Sujeita à rede externa e limites de taxa</td><td>Previsível e operável até mesmo offline</td></tr><tr><td>Customização</td><td>Restrita a prompts, ferramentas e APIs</td><td>Ajuste fino de pesos, quantização e poda</td></tr><tr><td>Dependência de fornecedor</td><td>Alta (risco de mudança de versão ou preço)</td><td>Baixa (pesos fixados sob controle da equipe)</td></tr></tbody></table>
+        </div>
+        <div class="fig-src">Fonte: Elaborado pelos autores com base em relatórios técnicos de implantação (2026).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">11<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide figslide" data-n="12">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 2 · Fundamentos de Modelos</div>
+      <h2 class="title">MATRIZ DE DECISÃO PARA ESCOLHA DE ARQUITETURA DE MODELO</h2>
+    </div>
+    <div class="content">
+      <figure class="fig">
+        <figcaption class="fig-cap"><span class="fig-k">Figura 2</span> Critérios de seleção entre modelos fechados, open weight e SLMs conforme o cenário</figcaption>
+        <div class="fig-card"><img src="assets/fig2.png" alt="Critérios de seleção entre modelos fechados, open weight e SLMs conforme o cenário"></div>
+        <div class="fig-src">Fonte: Elaborado pelos autores (2026).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">12<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="13">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 3 · Panorama dos Laboratórios</div>
+      <h2 class="title">PANORAMA DOS PRINCIPAIS LABORATÓRIOS GLOBAIS (PARTE 1)</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">OpenAI (EUA): famílias GPT 6 e GPT 6.1 (Astra, Sol, Terra, Luna) e pesos abertos gpt oss; destaque em raciocínio geral e multimodalidade.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Anthropic (EUA): famílias Claude Fable 5.2, Opus 5.5, Sonnet 5.5 e Haiku 5.5; forte liderança em engenharia de software, uso de ferramentas e agentes.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Google DeepMind (EUA): famílias Gemini 4 (Carbon, Hydrogen, Argon) e modelos abertos Gemma 4; destaque em janelas longas e integração multimodal.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Meta (EUA): família Llama e modelos Muse (Wonder e Spark); referência histórica na popularização de pesos abertos e pesquisa em escala.</div></div></li><li><div class="li-row"><div class="num">05</div><div class="li-txt">xAI (EUA): família Grok 4.7; foco em raciocínio rápido, janelas extensas de contexto e integração com dados em tempo real.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">13<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="14">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 3 · Panorama dos Laboratórios</div>
+      <h2 class="title">PANORAMA DOS PRINCIPAIS LABORATÓRIOS GLOBAIS (PARTE 2)</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">DeepSeek (China): família DeepSeek V4 e V4.1; referência global em modelos open weight de alta eficiência e baixo custo de inferência.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Alibaba Cloud (China): família Qwen4 e Qwen3.8; destaque em cobertura multilíngue, variantes especializadas em código e versões open weight.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Moonshot AI (China): família Kimi K3.1 Pro; liderança entre modelos open weight em benchmarks de raciocínio e contexto longo.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">MiniMax e Tencent (China): famílias MiniMax M3.1 (alta velocidade) e Tencent Hy4 e Hy4 Flash (lançamento recente de fronteira).</div></div></li><li><div class="li-row"><div class="num">05</div><div class="li-txt">Mistral AI (França): famílias Mistral Large 4 e Small 4; principal representante europeu com foco em eficiência e soberania digital.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">14<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide tableSlide" data-n="15">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 3 · Panorama dos Laboratórios</div>
+      <h2 class="title">MAPA COMPARATIVO DOS LABORATÓRIOS E POLÍTICAS DE ACESSO</h2>
+    </div>
+    <div class="content">
+      <figure class="tbl">
+        <figcaption class="fig-cap"><span class="fig-k">Tabela 4</span> Síntese dos principais laboratórios por sede, famílias atuais e política de distribuição</figcaption>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Laboratório</th><th>Origem</th><th>Famílias em Destaque (2026)</th><th>Distribuição Predominante</th></tr></thead><tbody><tr><td>Anthropic</td><td>EUA</td><td>Claude Fable 5.2, Opus 5.5, Sonnet 5.5</td><td>Proprietário (API e assinaturas)</td></tr><tr><td>Google DeepMind</td><td>EUA</td><td>Gemini 4 Carbon / Hydrogen, Gemma 4</td><td>Híbrido (Gemini fechado, Gemma open)</td></tr><tr><td>OpenAI</td><td>EUA</td><td>GPT 6 Astra, GPT 6.1 Sol, gpt oss</td><td>Híbrido (GPT fechado, gpt oss open)</td></tr><tr><td>Meta</td><td>EUA</td><td>Muse Wonder, Muse Spark, Llama</td><td>Híbrido (pesquisa e pesos abertos)</td></tr><tr><td>DeepSeek</td><td>China</td><td>DeepSeek V4 Pro, V4.1 Flash</td><td>Open weight (licença permissiva)</td></tr><tr><td>Alibaba (Qwen)</td><td>China</td><td>Qwen4 Max, Qwen3.8</td><td>Híbrido (Max fechado, série open)</td></tr><tr><td>Moonshot / Tencent</td><td>China</td><td>Kimi K3.1 Pro, Tencent Hy4 / Hy4 Flash</td><td>Híbrido (Kimi open weight, Hy4)</td></tr></tbody></table>
+        </div>
+        <div class="fig-src">Fonte: Artificial Analysis e repositórios oficiais dos laboratórios (novembro de 2026).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">15<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide figslide" data-n="16">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 3 · Panorama dos Laboratórios</div>
+      <h2 class="title">MODELOS DE FRONTEIRA ATUAIS PÓS LANÇAMENTO DO HY4</h2>
+    </div>
+    <div class="content">
+      <figure class="fig">
+        <figcaption class="fig-cap"><span class="fig-k">Figura 3</span> Pontuação composta dos principais modelos no Artificial Analysis Intelligence Index (novembro de 2026)</figcaption>
+        <div class="fig-card"><img src="assets/fig3.png" alt="Pontuação composta dos principais modelos no Artificial Analysis Intelligence Index (novembro de 2026)"></div>
+        <div class="fig-src">Fonte: Artificial Analysis LLM Leaderboard (consulta em novembro de 2026).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">16<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="17">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 3 · Panorama dos Laboratórios</div>
+      <h2 class="title">COMO INTERPRETAR BENCHMARKS SEM CAIR EM ARMADILHAS</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Contaminação de dados: questões públicas de avaliação podem acabar presentes nos dados de treinamento, inflando artificialmente as notas.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Saturação rápida: benchmarks tradicionais atingem tetos próximos a 95% em poucos meses, exigindo novas suítes como GPQA Diamond e SWE bench.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Benchmark estático versus agente real: acertar uma pergunta isolada não garante estabilidade em tarefas longas com dezenas de chamadas de ferramentas.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Avaliação multidimensional: além de inteligência bruta, analise custo por tarefa, latência do primeiro token, tamanho de contexto efetivo e confiabilidade.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">17<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide figslide" data-n="18">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 4 · Arquitetura de Agentes</div>
+      <h2 class="title">O QUE É UM AGENTE DE IA: PERCEPÇÃO, DECISÃO E LOOP</h2>
+    </div>
+    <div class="content">
+      <figure class="fig">
+        <figcaption class="fig-cap"><span class="fig-k">Figura 4</span> Ciclo operacional contínuo de um agente de inteligência artificial</figcaption>
+        <div class="fig-card"><img src="assets/fig4.png" alt="Ciclo operacional contínuo de um agente de inteligência artificial"></div>
+        <div class="fig-src">Fonte: Elaborado pelos autores com base em Wang et al. (2024) e Yao et al. (2023).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">18<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide figslide" data-n="19">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 4 · Arquitetura de Agentes</div>
+      <h2 class="title">DO CHATBOT AO AGENTE AUTÔNOMO: EVOLUÇÃO DA INTERAÇÃO</h2>
+    </div>
+    <div class="content">
+      <figure class="fig">
+        <figcaption class="fig-cap"><span class="fig-k">Figura 5</span> Comparação estrutural entre chatbot simples, assistente com ferramentas e agente autônomo</figcaption>
+        <div class="fig-card"><img src="assets/fig5.png" alt="Comparação estrutural entre chatbot simples, assistente com ferramentas e agente autônomo"></div>
+        <div class="fig-src">Fonte: Elaborado pelos autores (2026).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">19<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide figslide" data-n="20">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 4 · Arquitetura de Agentes</div>
+      <h2 class="title">ANATOMIA INTERNA DE UM AGENTE DE INTELIGÊNCIA ARTIFICIAL</h2>
+    </div>
+    <div class="content">
+      <figure class="fig">
+        <figcaption class="fig-cap"><span class="fig-k">Figura 6</span> Componentes estruturais que orbitam o modelo base dentro de um agente</figcaption>
+        <div class="fig-card"><img src="assets/fig6.png" alt="Componentes estruturais que orbitam o modelo base dentro de um agente"></div>
+        <div class="fig-src">Fonte: Elaborado pelos autores com base em Weng (2023).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">20<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="21">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 4 · Arquitetura de Agentes</div>
+      <h2 class="title">O QUE É UM HARNESS DE AGENTES E O IMPACTO DO HARNESS TAX</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Definição de harness: é a camada de software e infraestrutura que envolve o modelo, fornecendo ferramentas, gerenciamento de estado, permissões e ciclo de execução.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Separação entre cérebro e corpo: o LLM fornece o raciocínio; o harness fornece as mãos, os olhos, a memória e os limites de segurança.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">O fenômeno do Harness Tax: estudos mostram que o mesmo modelo pode variar drasticamente em taxa de acerto e consumir de 5x a 70x mais tokens conforme o harness.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Por que estudar harness engineering: otimizar o ambiente ao redor do modelo gera ganhos imediatos sem precisar treinar pesos novos.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">21<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide figslide" data-n="22">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 4 · Arquitetura de Agentes</div>
+      <h2 class="title">COMPONENTES ESSENCIAIS DE UM HARNESS MODERNO</h2>
+    </div>
+    <div class="content">
+      <figure class="fig">
+        <figcaption class="fig-cap"><span class="fig-k">Figura 7</span> Módulos internos responsáveis pelo controle, segurança e eficiência de um harness</figcaption>
+        <div class="fig-card"><img src="assets/fig7.png" alt="Módulos internos responsáveis pelo controle, segurança e eficiência de um harness"></div>
+        <div class="fig-src">Fonte: Elaborado pelos autores com base em arquiteturas de harness abertos (2026).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">22<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide tableSlide" data-n="23">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 4 · Arquitetura de Agentes</div>
+      <h2 class="title">EXTENSIBILIDADE E CONFIGURAÇÃO DECLARATIVA EM AGENTES</h2>
+    </div>
+    <div class="content">
+      <figure class="tbl">
+        <figcaption class="fig-cap"><span class="fig-k">Tabela 5</span> Mecanismos de personalização e extensão utilizados em harness modernos</figcaption>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Mecanismo</th><th>Natureza Técnica</th><th>Função Principal no Projeto</th></tr></thead><tbody><tr><td>AGENTS.md / CLAUDE.md</td><td>Arquivo declarativo na raiz do projeto</td><td>Define convenções, comandos de build, testes e arquitetura</td></tr><tr><td>Skills</td><td>Pacotes modulares de instrução e scripts</td><td>Ensinam procedimentos especializados sob demanda</td></tr><tr><td>Plugins</td><td>Extensões empacotadas de código e tools</td><td>Adicionam novas capacidades, integrações e análises</td></tr><tr><td>Comandos Customizados</td><td>Atalhos parametrizados pelo usuário</td><td>Disparam fluxos recorrentes com argumentos padronizados</td></tr><tr><td>Hooks</td><td>Gatilhos determinísticos pré ou pós ação</td><td>Validam formatação, segurança ou bloqueiam comandos</td></tr></tbody></table>
+        </div>
+        <div class="fig-src">Fonte: Especificação aberta AGENTS.md e documentações de harness (2026).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">23<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide figslide" data-n="24">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 4 · Arquitetura de Agentes</div>
+      <h2 class="title">PILHA DE PROTOCOLOS ABERTOS: MCP, A2A E AG UI</h2>
+    </div>
+    <div class="content">
+      <figure class="fig">
+        <figcaption class="fig-cap"><span class="fig-k">Figura 8</span> Interoperabilidade entre agente, ferramentas externas, outros agentes e interface</figcaption>
+        <div class="fig-card"><img src="assets/fig8.png" alt="Interoperabilidade entre agente, ferramentas externas, outros agentes e interface"></div>
+        <div class="fig-src">Fonte: Especificações MCP (Anthropic), A2A e AG UI (2026).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">24<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="25">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 4 · Arquitetura de Agentes</div>
+      <h2 class="title">SUBAGENTS: ESPECIALIZAÇÃO E ISOLAMENTO DE CONTEXTO</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Problema da janela poluída: quando um único agente lê dezenas de arquivos e logs de erro, o excesso de informação degrada a qualidade das decisões.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Conceito de subagents: instâncias auxiliares disparadas pelo agente principal com objetivo específico e janela de contexto própria e limpa.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Especialização de papel: permite criar subagents dedicados a explorar código, escrever testes, revisar segurança ou redigir documentação.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Trade off de coordenação: melhora a precisão e economiza contexto principal, mas exige contratos claros de entrada e saída para evitar retrabalho.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">25<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide figslide" data-n="26">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 4 · Arquitetura de Agentes</div>
+      <h2 class="title">ORQUESTRAÇÃO PARALELA, BACKGROUND AGENTS E GIT WORKTREES</h2>
+    </div>
+    <div class="content">
+      <figure class="fig">
+        <figcaption class="fig-cap"><span class="fig-k">Figura 9</span> Execução paralela e isolada de múltiplos agentes utilizando Git Worktrees</figcaption>
+        <div class="fig-card"><img src="assets/fig9.png" alt="Execução paralela e isolada de múltiplos agentes utilizando Git Worktrees"></div>
+        <div class="fig-src">Fonte: Elaborado pelos autores (2026).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">26<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="27">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 4 · Arquitetura de Agentes</div>
+      <h2 class="title">ORQUESTRADORES E PAINÉIS DE CONTROLE: TRAYCER E MAESTRI</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Papel do orquestrador: atua como painel de controle central acima dos harness individuais, coordenando planejamento, memória compartilhada e múltiplos agentes.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Traycer na prática: aplicação aberta que conecta harness como OpenCode, Hermes Agent, Pi, Claude Code e Codex em um espaço unificado.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Benefícios de coordenação: permite alternar modelos dentro da mesma tarefa, estruturar planos antes da edição e promover debate e revisão entre agentes.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Maestri e fluxos estruturados: ferramentas dessa categoria organizam filas de tarefas, acompanhamento visual de progresso e controle humano sobre entregas paralelas.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">27<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide figslide" data-n="28">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 4 · Arquitetura de Agentes</div>
+      <h2 class="title">GRAPH ENGINEERING: FLUXOS DE AGENTES COMO GRAFOS DE ESTADO</h2>
+    </div>
+    <div class="content">
+      <figure class="fig">
+        <figcaption class="fig-cap"><span class="fig-k">Figura 10</span> Modelagem de fluxo de agentes como grafo direcionado com transições condicionais</figcaption>
+        <div class="fig-card"><img src="assets/fig10.png" alt="Modelagem de fluxo de agentes como grafo direcionado com transições condicionais"></div>
+        <div class="fig-src">Fonte: Elaborado pelos autores com base em arquiteturas de grafos de estado (2026).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">28<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide figslide" data-n="29">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 4 · Arquitetura de Agentes</div>
+      <h2 class="title">LOOP ENGINEERING E VERIFICADORES AUTOMATIZADOS (RLVR)</h2>
+    </div>
+    <div class="content">
+      <figure class="fig">
+        <figcaption class="fig-cap"><span class="fig-k">Figura 11</span> Ciclo iterativo Plan, Act, Verify e Iterate acoplado a verificadores determinísticos</figcaption>
+        <div class="fig-card"><img src="assets/fig11.png" alt="Ciclo iterativo Plan, Act, Verify e Iterate acoplado a verificadores determinísticos"></div>
+        <div class="fig-src">Fonte: Elaborado pelos autores (2026).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">29<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="30">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 4 · Arquitetura de Agentes</div>
+      <h2 class="title">CONTEXTO COMO RECURSO ESCASSO E DIVULGAÇÃO PROGRESSIVA</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Degradação por excesso: mesmo com janelas de 1 milhão de tokens, encher o contexto com instruções irrelevantes reduz a precisão e aumenta o custo.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Divulgação progressiva (progressive disclosure): o harness expõe apenas um índice leve de skills e ferramentas no início, carregando o conteúdo completo sob demanda.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Compactação automática: quando a sessão atinge um limiar de ocupação, o histórico antigo é resumido preservando decisões e estado atual.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Externalização de estado: planos, listas de tarefas e descobertas são gravados em arquivos persistentes fora da janela volátil.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">30<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide tableSlide" data-n="31">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 5 · Ferramentas e Fronteiras</div>
+      <h2 class="title">PANORAMA DAS FERRAMENTAS E HARNESS DISPONÍVEIS</h2>
+    </div>
+    <div class="content">
+      <figure class="tbl">
+        <figcaption class="fig-cap"><span class="fig-k">Tabela 6</span> Comparativo prático entre principais harness e agentes de desenvolvimento atuais</figcaption>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Ferramenta / Harness</th><th>Interface</th><th>Suporte a Modelos</th><th>Diferencial Principal</th></tr></thead><tbody><tr><td>OpenCode</td><td>Terminal (TUI / CLI)</td><td>Multi-provedor (aberto)</td><td>Integração nativa com LSP, MCP e auto compactação</td></tr><tr><td>Hermes Agent</td><td>Terminal, Desktop e Bots</td><td>Multi-provedor (aberto)</td><td>Memória persistente e criação automática de skills</td></tr><tr><td>Pi (pi coding agent)</td><td>Terminal (CLI minimalista)</td><td>Multi-provedor (aberto)</td><td>Arquitetura enxuta, extensível e de baixo overhead</td></tr><tr><td>Claude Code</td><td>Terminal e IDE</td><td>Família Claude</td><td>Integração profunda com subagents, hooks e MCP</td></tr><tr><td>Codex</td><td>Terminal, IDE e Nuvem</td><td>Família GPT</td><td>Execução paralela em sandboxes na nuvem e local</td></tr><tr><td>Cursor</td><td>IDE completa</td><td>Multi-provedor</td><td>Edição visual assistida, indexação e agentes integrados</td></tr><tr><td>Kimi Code / MiniMax / DeepSeek</td><td>CLI e APIs dedicadas</td><td>Modelos próprios e abertos</td><td>Alto custo benefício em código e raciocínio rápido</td></tr></tbody></table>
+        </div>
+        <div class="fig-src">Fonte: Documentações oficiais dos projetos (2026).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">31<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="32">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 5 · Ferramentas e Fronteiras</div>
+      <h2 class="title">COMO INSTALAR E INICIAR EM CADA FERRAMENTA</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Requisitos comuns: ambiente Node.js ou Python atualizado, Git instalado e chaves de API configuradas via variáveis de ambiente.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Harness de terminal abertos: OpenCode, Pi e Hermes Agent oferecem instalação via gerenciadores de pacotes (npm, pip ou script oficial) e assistentes iniciais de setup.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">CLIs oficiais de provedores: Claude Code, Codex e Kimi Code são instalados via terminal e autenticados diretamente na conta ou chave de API.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">IDEs e painéis de controle: Cursor e Traycer possuem instaladores desktop multiplataforma (Linux, macOS e Windows) que detectam os agentes já instalados.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">32<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="33">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 5 · Ferramentas e Fronteiras</div>
+      <h2 class="title">ESTRATÉGIAS MULTIAGENTE E AGENTES DE INTERFACE (COMPUTER USE)</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Especialização por etapa: usar modelos de raciocínio máximo para arquitetura e revisão, e modelos rápidos e econômicos para implementação e testes.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Combinação de harness: orquestrar OpenCode, Pi e Hermes Agent sob o Traycer permite comparar soluções e evitar pontos cegos de um único modelo.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Computer Use e agentes de navegador: quando um sistema legado não possui API ou servidor MCP, agentes operam a interface gráfica via árvore DOM e visão computacional.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Automação ponta a ponta: integra desenvolvimento de código, validação visual no navegador e testes de ponta a ponta no mesmo ciclo.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">33<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="34">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 5 · Ferramentas e Fronteiras</div>
+      <h2 class="title">FLUXO DE TRABALHO DE REFERÊNCIA EM PROJETOS REAIS</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Especificação clara: definir requisitos, restrições técnicas e critérios de aceitação em documento estruturado antes de gerar código.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Planejamento revisado: usar o orquestrador para quebrar o escopo em tarefas pequenas e validar a arquitetura com o humano.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Execução paralela e isolada: distribuir subtarefas entre subagents em worktrees separados com acesso a MCPs e documentação atualizada.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Verificação determinística e revisão: rodar testes automatizados, análise estática e revisão cruzada entre agentes antes de aprovar a entrega.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">34<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide figslide" data-n="35">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 5 · Ferramentas e Fronteiras</div>
+      <h2 class="title">HARNESS AUTO EVOLUTIVOS: SELFEVOPI E O FUTURO DAS SGIS</h2>
+    </div>
+    <div class="content">
+      <figure class="fig">
+        <figcaption class="fig-cap"><span class="fig-k">Figura 12</span> Ciclo de autoaperfeiçoamento contínuo em arquiteturas como SelfEvoPI e Hermes Agent</figcaption>
+        <div class="fig-card"><img src="assets/fig12.png" alt="Ciclo de autoaperfeiçoamento contínuo em arquiteturas como SelfEvoPI e Hermes Agent"></div>
+        <div class="fig-src">Fonte: Elaborado pelos autores com base em SelfEvoPI (Oliveira, 2026) e Nous Research (2026).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">35<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="36">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 5 · Ferramentas e Fronteiras</div>
+      <h2 class="title">O HORIZONTE PARA SISTEMAS MAIS GERAIS (SGI E AGI)</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">O que os dados comprovam hoje: sistemas compostos por modelos de raciocínio e harness adaptativos já resolvem problemas complexos de engenharia e pesquisa em domínios restritos.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Gargalos ainda em aberto: generalização confiável fora da distribuição de treino, aprendizado contínuo sem esquecimento catastrófico e planejamento de longuíssimo prazo.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Papel da arquitetura de harness: avanços rumo a sistemas mais gerais dependem tanto da evolução do ambiente, memória e autoavaliação quanto do tamanho dos pesos.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Rigor científico: separar capacidades verificáveis em laboratório de promessas comerciais é essencial para construir tecnologia sustentável.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">36<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="37">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 5 · Ferramentas e Fronteiras</div>
+      <h2 class="title">SEGURANÇA, GOVERNANÇA E BOAS PRÁTICAS DE USO</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Prompt injection indireto: arquivos externos, páginas web ou servidores MCP maliciosos podem conter instruções ocultas para sequestrar ações do agente.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Princípio do menor privilégio: restringir permissões de terminal, rede e escrita de arquivos usando sandboxes e listas explícitas de comandos permitidos.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Proteção de dados e segredos: nunca expor chaves de API, dados pessoais ou informações sensíveis em prompts sem controle de retenção.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Responsabilidade humana: agentes aceleram a produção, mas a revisão arquitetural, a segurança e a autoria técnica permanecem responsabilidade do desenvolvedor.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">37<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets" data-n="38">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 6 · Encerramento</div>
+      <h2 class="title">TRILHA DE APRENDIZADO SUGERIDA EM QUATRO ETAPAS</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Etapa 1 (Fundamentos): compreender tokens, janela de contexto, prompts estruturados e a diferença entre modelos fechados, open weight e SLMs.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Etapa 2 (Uso assistido e regras): adotar um editor ou CLI como OpenCode ou Cursor e criar arquivos AGENTS.md claros para seus repositórios.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Etapa 3 (Extensibilidade e protocolos): conectar servidores MCP, criar skills reutilizáveis e configurar verificadores automáticos com testes e linters.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Etapa 4 (Orquestração e auto-evolução): coordenar múltiplos agentes em paralelo com Traycer, Worktrees e arquiteturas de loop e autoaperfeiçoamento.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">38<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide figslide" data-n="39">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 6 · Encerramento</div>
+      <h2 class="title">SÍNTESE VISUAL: MAPA CONCEITUAL INTEGRADO DA OFICINA</h2>
+    </div>
+    <div class="content">
+      <figure class="fig">
+        <figcaption class="fig-cap"><span class="fig-k">Figura 13</span> Arquitetura em quatro camadas conectando modelos, protocolos, harness e orquestração</figcaption>
+        <div class="fig-card"><img src="assets/fig13.png" alt="Arquitetura em quatro camadas conectando modelos, protocolos, harness e orquestração"></div>
+        <div class="fig-src">Fonte: Elaborado pelos autores (2026).</div>
+      </figure>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">39<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets big" data-n="40">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 6 · Encerramento</div>
+      <h2 class="title">PERGUNTAS E DISCUSSÃO ABERTA</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Troca de experiências: quais desafios vocês enfrentam hoje ao integrar agentes de IA em pesquisas acadêmicas ou projetos de software?</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Escolha de ferramentas: dúvidas sobre como selecionar modelos locais, configuradores de contexto ou protocolos MCP e A2A?</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Aplicações na Amazônia: como adaptar soluções leves e open weight para cenários com conectividade limitada ou demandas regionais específicas?</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">40<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide refSlide" data-n="41">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head compact">
+      <div class="eb">Bloco 6 · Encerramento</div>
+      <h2 class="title">REFERÊNCIAS</h2>
+    </div>
+    <div class="content">
+      <div class="refs">
+        <ul class="ref-col"><li>ANTHROPIC. Model Context Protocol (MCP) Specification. Documentação técnica, 2025. Disponível em: https://modelcontextprotocol.io.</li><li>ARTIFICIAL ANALYSIS. LLM Leaderboard: Comparison of AI Models across Intelligence, Performance, and Price. Consulta em novembro de 2026. Disponível em: https://artificialanalysis.ai/leaderboards/models.</li><li>BELCAK, P. et al. Small Language Models are the Future of Agentic AI. NVIDIA Research, 2025.</li><li>BOMMASANI, R. et al. On the Opportunities and Risks of Foundation Models. Stanford Center for Research on Foundation Models, 2022.</li><li>LINUX FOUNDATION. Agentic AI Foundation: AGENTS.md and A2A Open Standards. Especificações técnicas, 2026.</li><li>NOUS RESEARCH. Hermes Agent: Self Improving Open Source Agent Harness. Repositório oficial, 2026. Disponível em: https://github.com/nousresearch/hermes-agent.</li></ul>
+        <ul class="ref-col"><li>OLIVEIRA, K. R. SelfEvoPI: Arquitetura de Harness Auto Evolutivo para Agentes de Engenharia de Software. Projeto técnico, 2026.</li><li>RUSSELL, S.; NORVIG, P. Artificial Intelligence: A Modern Approach. 4. ed. Pearson, 2021.</li><li>TRAYCER AI. Traycer: Open Source AI Orchestration App for Coding Agents. Documentação oficial, 2026. Disponível em: https://github.com/traycerai/traycer.</li><li>WANG, L. et al. A Survey on Large Language Model based Autonomous Agents. Frontiers of Computer Science, v. 18, n. 6, 2024.</li><li>WENG, L. LLM Powered Autonomous Agents. Lil'Log Technical Blog, 2023.</li></ul>
+      </div>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">41<span class="tot">/42</span></div>
+    </div>
+  </section>
+
+  <section class="slide bullets big" data-n="42">
+    
+    <div class="top">
+      <img class="logo logo-ifpa" src="assets/logo_ifpa.jpg" alt="IFPA">
+      <img class="logo logo-siepex" src="assets/logo_siepex.jpg" alt="VIII SIEPEX">
+    </div>
+    <div class="head">
+      <div class="eb">Bloco 6 · Encerramento</div>
+      <h2 class="title">AGRADECIMENTOS E CONTATO</h2>
+    </div>
+    <div class="content">
+      <ul class="blist"><li><div class="li-row"><div class="num">01</div><div class="li-txt">Instituição e evento: agradecemos ao Instituto Federal do Pará (IFPA, Campus Ananindeua) e à comissão organizadora do VIII SIEPEX 2026.</div></div></li><li><div class="li-row"><div class="num">02</div><div class="li-txt">Orientação: agradecimento especial ao professor Adalberto Melo pelo apoio e orientação acadêmica.</div></div></li><li><div class="li-row"><div class="num">03</div><div class="li-txt">Kelvin Rebelo de Oliveira: portfólio e materiais em tinyurl.com/kelvinoliveira | contato: kelvinrebelosw@gmail.com.</div></div></li><li><div class="li-row"><div class="num">04</div><div class="li-txt">Equipe de ministrantes: Luiz Guimarães Silva e Carlos Augusto dos Santos Barbosa.</div></div></li></ul>
+    </div>
+    
+    <div class="foot">
+      <div class="foot-l">VIII SIEPEX do IFPA Campus Ananindeua &nbsp;·&nbsp; 23 a 27 de novembro de 2026</div>
+      <div class="foot-r">42<span class="tot">/42</span></div>
+    </div>
+  </section>
+</div>
+<div id="nav">
+  <button class="navbtn" id="prev" aria-label="Anterior">&#8249;</button>
+  <span id="counter">1 / 42</span>
+  <button class="navbtn" id="next" aria-label="Próximo">&#8250;</button>
+</div>
+<script>
+(function(){
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var i = 0, n = slides.length;
+  var stage = document.getElementById('stage');
+  var prog = document.getElementById('progress');
+  var counter = document.getElementById('counter');
+  function fit(){
+    var s = Math.min(window.innerWidth/1280, window.innerHeight/720);
+    stage.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
+  }
+  function show(k){
+    i = Math.max(0, Math.min(n-1, k));
+    slides.forEach(function(el,idx){ el.classList.toggle('active', idx===i); });
+    prog.style.width = ((i+1)/n*100) + '%';
+    if(counter) counter.textContent = (i+1) + ' / ' + n;
+    if(location.hash !== '#'+slides[i].dataset.n){ history.replaceState(null,'','#'+slides[i].dataset.n); }
+  }
+  function next(){ show(i+1); } function prev(){ show(i-1); }
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){ e.preventDefault(); next(); }
+    else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){ e.preventDefault(); prev(); }
+    else if(e.key==='Home'){ e.preventDefault(); show(0); }
+    else if(e.key==='End'){ e.preventDefault(); show(n-1); }
+    else if(e.key==='PageDown'){ e.preventDefault(); next(); }
+    else if(e.key==='PageUp'){ e.preventDefault(); prev(); }
+    else if(e.key==='f'||e.key==='F'){
+      if(!document.fullscreenElement){ document.documentElement.requestFullscreen && document.documentElement.requestFullscreen(); }
+      else { document.exitFullscreen && document.exitFullscreen(); }
+    }
+  });
+  document.getElementById('next').addEventListener('click', next);
+  document.getElementById('prev').addEventListener('click', prev);
+  var startX=null;
+  stage.addEventListener('touchstart', function(e){ startX = e.touches[0].clientX; }, {passive:true});
+  stage.addEventListener('touchend', function(e){
+    if(startX===null) return;
+    var dx = e.changedTouches[0].clientX - startX;
+    if(Math.abs(dx)>45){ dx<0 ? next() : prev(); }
+    startX=null;
+  }, {passive:true});
+  window.addEventListener('resize', fit);
+  // init
+  var h = parseInt((location.hash||'').replace('#',''),10);
+  var idx = slides.findIndex(function(s){ return s.dataset.n === String(h); });
+  fit(); show(idx>=0?idx:0);
+  window.__deck = {show:show, count:n};
+})();
+</script>
+</body>
+</html>
